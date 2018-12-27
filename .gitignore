@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.npy
+*.h5
+
 # C extensions
 *.so
 
@@ -62,7 +65,7 @@ local_settings.py
 # Flask stuff:
 instance/
 .webassets-cache
-
+*.zip
 # Scrapy stuff:
 .scrapy
 

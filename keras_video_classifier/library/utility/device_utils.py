@@ -9,7 +9,7 @@ def init_devices(device_type=None):
     if device_type is None:
         device_type = 'cpu'
 
-    num_cores = 4
+    num_cores = 8
 
     if device_type == 'gpu':
         num_GPU = 1

@@ -5,53 +5,118 @@ from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.preprocessing.image import img_to_array
 from keras.optimizers import SGD
 
-MAX_NB_CLASSES = 20
+MAX_NB_CLASSES = 101
 
 
+#def extract_vgg16_features_live(model, video_input_file_path):
+#    print('Extracting frames from video: ', video_input_file_path)
+#    vidcap = cv2.VideoCapture(video_input_file_path)
+#   success, image = vidcap.read()
+#   features = []
+#    success = True
+#    count = 0
+#    while success:
+#       vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))  # added this line
+#       success, image = vidcap.read()
+#       # print('Read a new frame: ', success)
+#        if success:
+#            img = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
+#           input = img_to_array(img)
+#           input = np.expand_dims(input, axis=0)
+#           input = preprocess_input(input)
+#           feature = model.predict(input).ravel()            
+#            features.append(feature)
+#            count = count + 0.5
+#    unscaled_features = np.array(features)
+#    return unscaled_features
 def extract_vgg16_features_live(model, video_input_file_path):
+    if os.path.exists(feature_output_file_path):
+        return np.load(feature_output_file_path)
     print('Extracting frames from video: ', video_input_file_path)
     vidcap = cv2.VideoCapture(video_input_file_path)
     success, image = vidcap.read()
     features = []
     success = True
-    count = 0
+    # seconds = 1
+    frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_to_extract = 35
+    interval = int(frame_count/frame_to_extract)
+    if interval == 0:
+        interval = 1
+    fps = int(round(vidcap.get(cv2.CAP_PROP_FPS)))        
+    # multiplier = fps * seconds
+    # print('fps + multiplyer',seconds, fps, multiplier)
     while success:
-        vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))  # added this line
+        frameId = int(round(vidcap.get(1)))
         success, image = vidcap.read()
-        # print('Read a new frame: ', success)
-        if success:
+        if frameId % interval == 0 and success: 
             img = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
             input = img_to_array(img)
             input = np.expand_dims(input, axis=0)
             input = preprocess_input(input)
             feature = model.predict(input).ravel()
             features.append(feature)
-            count = count + 1
     unscaled_features = np.array(features)
     return unscaled_features
 
+#def extract_vgg16_features(model, video_input_file_path, feature_output_file_path):
+#    # if feature_output exist, load it and didn't use VGG16
+#    
+#    if os.path.exists(feature_output_file_path):
+#       return np.load(feature_output_file_path)
+#    
+#   count = 0
+#   print('Extracting frames from video: ', video_input_file_path)
+#    vidcap = cv2.VideoCapture(video_input_file_path)
+#    success, image = vidcap.read()
+#    features = []
+#    success = True
+#    while success:
+#        vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))  # added this line
+#        success, image = vidcap.read()
+#        #print('Read a new frame: ', success)
+#        if success:
+#           img = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
+#            input = img_to_array(img)
+#            input = np.expand_dims(input, axis=0)
+#            input = preprocess_input(input)
+#            feature = model.predict(input).ravel() #Flatten nd.array to [1,2,3,4,5...]
+#            features.append(feature)
+#            #print("FEATURE.shape= :" , np.shape(feature)) # features shape = flatten(7x7x512) of VGG16
+#            count = count + 0.5
+#            #print("count: = " ,count)
+#    unscaled_features = np.array(features)
+#    # print("unscaled_features.shape= :" , np.shape(unscaled_features)) # shape = (number_of_frame,7x7x512)
+#    np.save(feature_output_file_path, unscaled_features)
+#    return unscaled_features
 
 def extract_vgg16_features(model, video_input_file_path, feature_output_file_path):
     if os.path.exists(feature_output_file_path):
         return np.load(feature_output_file_path)
-    count = 0
     print('Extracting frames from video: ', video_input_file_path)
     vidcap = cv2.VideoCapture(video_input_file_path)
     success, image = vidcap.read()
     features = []
     success = True
+    # seconds = 1
+    frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_to_extract = 35
+    interval = int(frame_count/frame_to_extract)
+    if interval == 0:
+        interval = 1
+    fps = int(round(vidcap.get(cv2.CAP_PROP_FPS)))        
+    # multiplier = fps * seconds
+    # print('fps + multiplyer',seconds, fps, multiplier)
     while success:
-        vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))  # added this line
+        frameId = int(round(vidcap.get(1)))
         success, image = vidcap.read()
-        # print('Read a new frame: ', success)
-        if success:
+        if frameId % interval == 0 and success: 
             img = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
             input = img_to_array(img)
             input = np.expand_dims(input, axis=0)
             input = preprocess_input(input)
             feature = model.predict(input).ravel()
             features.append(feature)
-            count = count + 1
     unscaled_features = np.array(features)
     np.save(feature_output_file_path, unscaled_features)
     return unscaled_features
@@ -86,8 +151,11 @@ def scan_and_extract_vgg16_features(data_dir_path, output_dir_path, model=None, 
             for ff in os.listdir(file_path):
                 video_file_path = file_path + os.path.sep + ff
                 output_feature_file_path = output_dir_path + os.path.sep + ff.split('.')[0] + '.npy'
-                x = extract_vgg16_features(model, video_file_path, output_feature_file_path)
-                y = f
+                x = extract_vgg16_features(model, video_file_path, output_feature_file_path) # x.shape=(number_of_frames,7x7x512)
+                #print("X.shape ========: ", np.shape(x))
+                #print("F ======== : ",f)
+                y = f # f = label of folder
+                # print("X====: ",x) # features extraction of VGG16 as np array.
                 y_samples.append(y)
                 x_samples.append(x)
 

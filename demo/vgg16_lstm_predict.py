@@ -41,6 +41,7 @@ def main():
         correct_count = correct_count + 1 if label == predicted_label else correct_count
         count += 1
         accuracy = correct_count / count
+        print('correct_count: ' + str(correct_count) + ' count: ' + str(count))
         print('accuracy: ', accuracy)
 
 

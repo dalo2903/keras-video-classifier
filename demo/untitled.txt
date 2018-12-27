@@ -1,0 +1,18 @@
+28-11-2018:
+02:46 start vgg16_lstm_hi_dim_train.py => 02:52 ~ 6 phút để tách tất cả các frames => 02:54 để train 20 epouch.
+02:55 start vgg16_lstm_hi_dim_predict.py => print(error)
+02:57 // => 03:05 vgg16_lstm_hi_dim ACC: 0.998074, ACC = 2592/2597
+vgg16_lstm ACC: 0.8733 = 2268/2597
+vgg16_bilstm_hi_dim_predict ACC: 2588/2597 ~ 0.9965
+
+///28-11-2018
+13:54 start vgg16_lstm_hi_dim_train 101_class => 15:21 ACC: 0.97364 = 12969/ 13320
+15:26 start vgg16_lstm => 15:58 xong, acc: 0.553 , val_acc 0.5824 => 16:35 ACC ~ 0.6503 = 8662/13320
+
+/////
+1-12-2018
+3:25 Start vgg16_lstm_hi_dim_train 101_class
+
+////
+20-12-2018 
+RESNET_TRAIN : 4h50 Start => ~ 1p / epouch

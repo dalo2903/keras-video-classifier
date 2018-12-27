@@ -52,8 +52,10 @@ def scan_ucf(data_dir_path, limit):
     return result
 
 
-def scan_ucf_with_labels(data_dir_path, labels):
+def scan_ucf_with_labels(data_dir_path, labels, hard_split = False):
     input_data_dir_path = data_dir_path + '/UCF-101'
+    if (hard_split == True):
+        input_data_dir_path = data_dir_path + '/UCF-101_Train'
 
     result = dict()
 

@@ -1,0 +1,1 @@
+matplotlib.get_backend()
